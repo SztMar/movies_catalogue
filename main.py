@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def homepage():
-    movies = ["2012","Apocaliptyco", "Shrek 3"]
+    movies = ["The Green Mile","Apocalipto", "Shrek 3", "Avatar"]
     
     return render_template("homepage.html", movies=movies)
 
