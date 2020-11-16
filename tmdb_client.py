@@ -1,13 +1,16 @@
 import requests
+import json
+
 
 def get_popular_movies():
     endpoint = "https://api.themoviedb.org/3/movie/popular/"
     api_token = "115d54b112f4215ade3207a23244732e"
+    full_url = f'{endpoint}?api_key={api_token}'
     headers = {
-        "Authorisation": f"{api_token}"
+        "Authorization": f"{api_token}"
     }
-    #response = requests.get(endpoint, headers=headers)
-    response = requests.get("https://api.themoviedb.org/3/movie/popular?api_key=115d54b112f4215ade3207a23244732e")
+    response = requests.get(full_url)
+    
     return response.json()
 
 def get_poster_url(poster_api_path, size="w342"):
@@ -16,6 +19,7 @@ def get_poster_url(poster_api_path, size="w342"):
 
 def get_movies(how_many):
     data = get_popular_movies()
+   
     return data["results"][:how_many]
 
 
