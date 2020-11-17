@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request, make_response, redirect
+from flask import Flask, render_template, url_for, request, redirect
 import requests
 import tmdb_client
 import random
@@ -14,9 +14,14 @@ movie_list= ['now_playing', 'popular','top_rated', 'upcoming']
 def homepage():
     rnd = randrange(8,30)
     selected_list = request.args.get('list_type', "popular")
-    movies = tmdb_client.get_movies(how_many=rnd, list_type=selected_list )
+    if movie_list.count(selected_list) == 0:
+        return redirect("/")
+
+    else:
+        movies = tmdb_client.get_movies(how_many=rnd, list_type=selected_list )
     
     return render_template("homepage.html", movies=movies, current_list=selected_list, movie_list=movie_list)
+    
 
     
 
