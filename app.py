@@ -1,18 +1,24 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, url_for, request, make_response, redirect
 import requests
 import tmdb_client
+import random
 from random import randrange
 
 
 
-app = Flask(__name__)
 
+app = Flask(__name__)
+movie_list= ['now_playing', 'popular','top_rated', 'upcoming']
 
 @app.route('/')
 def homepage():
-    rnd = randrange(20)
-    movies = tmdb_client.get_movies(rnd)
-    return render_template("homepage.html", movies=movies)
+    rnd = randrange(8,30)
+    selected_list = request.args.get('list_type', "popular")
+    movies = tmdb_client.get_movies(how_many=rnd, list_type=selected_list )
+    
+    return render_template("homepage.html", movies=movies, current_list=selected_list, movie_list=movie_list)
+
+    
 
 @app.context_processor
 def utility_processor():
@@ -22,7 +28,11 @@ def utility_processor():
 
 @app.route("/movie/<movie_id>")
 def movie_details(movie_id):
-    return render_template("movie_details.html")
+    details = tmdb_client.get_single_movie(movie_id)
+    cast = tmdb_client.get_single_movie_cast(movie_id)
+    movie_images = tmdb_client.get_movie_images(movie_id)
+    selected_backdrop = random.choice(movie_images['backdrops'])
+    return render_template("movie_details.html", cast = cast, movie = details, selected_backdrop=selected_backdrop)
 
 
 if __name__ == '__main__':
