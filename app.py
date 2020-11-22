@@ -14,14 +14,13 @@ movie_list= ['now_playing', 'popular','top_rated', 'upcoming']
 def homepage():
     rnd = randrange(8,30)
     selected_list = request.args.get('list_type', "popular")
-    if movie_list.count(selected_list) == 0:
-        return redirect("/")
-
+    
+    if selected_list in movie_list:
+        movies = tmdb_client.get_movies(how_many=rnd, list_type=selected_list )    
+        return render_template("homepage.html", movies=movies, current_list=selected_list, movie_list=movie_list)
+    
     else:
-        movies = tmdb_client.get_movies(how_many=rnd, list_type=selected_list )
-    
-    return render_template("homepage.html", movies=movies, current_list=selected_list, movie_list=movie_list)
-    
+        return redirect("/")   
 
     
 
@@ -37,7 +36,7 @@ def movie_details(movie_id):
     cast = tmdb_client.get_single_movie_cast(movie_id)
     movie_images = tmdb_client.get_movie_images(movie_id)
     selected_backdrop = random.choice(movie_images['backdrops'])
-    return render_template("movie_details.html", cast = cast, movie = details, selected_backdrop=selected_backdrop)
+    return render_template("movie_details.html", cast = cast_details['cast'], movie = details, selected_backdrop=selected_backdrop)
 
 
 if __name__ == '__main__':
