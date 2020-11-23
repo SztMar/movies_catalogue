@@ -1,5 +1,9 @@
 import tmdb_client
 from unittest.mock import Mock
+import app
+from app import app
+
+test_list = "top_rated"
 
 def test_get_poster_url_uses_default_size():
    # Przygotowanie danych
@@ -65,7 +69,17 @@ def test_get_movies_by_default_movies():
    adult = False
 
    # Wywołanie kodu, który testujemy
-   data = tmdb_client.get_movies(how_many= how_many, list_type="popular")
+   data = tmdb_client.get_movies(how_many= how_many, list_type="upcoming")
    assert data[0]['adult'] == adult
-  
+
+def test_homepage_movie_list(monkeypatch, test_list):
+   
+   api_mock = Mock()
+   api_mock.return_value={'results': []}
+   monkeypatch.setattr("tmdb_client.call_tmdb_api", api_mock)
+
+   with app.test_client() as client:
+       response = client.get('/')
+       assert response.status_code == 200
+       api_mock.assert_called_once_with(f'movie/{test_list}')
 
