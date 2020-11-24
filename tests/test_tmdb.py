@@ -2,6 +2,7 @@ import tmdb_client
 from unittest.mock import Mock
 import app
 from app import app
+import pytest
 
 test_list = "top_rated"
 
@@ -72,14 +73,16 @@ def test_get_movies_by_default_movies():
    data = tmdb_client.get_movies(how_many= how_many, list_type="upcoming")
    assert data[0]['adult'] == adult
 
-def test_homepage_movie_list(monkeypatch, test_list):
+@pytest.mark.parametrize("test_input",['now_playing', 'popular','top_rated', 'upcoming'])
+def test_homepage_movie_list(monkeypatch, test_input):
    
    api_mock = Mock()
    api_mock.return_value={'results': []}
    monkeypatch.setattr("tmdb_client.call_tmdb_api", api_mock)
 
    with app.test_client() as client:
-       response = client.get('/')
+       print(test_input)
+       response = client.get(f'/?list_type={test_input}')
        assert response.status_code == 200
-       api_mock.assert_called_once_with(f'movie/{test_list}')
+       api_mock.assert_called_once_with(f'movie/{test_input}')
 
